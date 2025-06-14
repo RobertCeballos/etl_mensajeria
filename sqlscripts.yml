@@ -1,0 +1,114 @@
+
+dim_fecha: 
+  CREATE TABLE dim_fecha (
+  fecha_id DATE PRIMARY KEY,
+  ano INT,
+  mes INT,
+  dia_mes INT,
+  dia_semana INT,
+  festivo BOOLEAN,
+  festivo_nombre VARCHAR(100)
+  );
+
+dim_hora:
+  CREATE TABLE dim_hora (
+  hora_id TIME PRIMARY KEY,
+  hora INT,
+  minuto INT,
+  segundo INT
+  );
+
+dim_cliente:  
+  CREATE TABLE dim_cliente (
+  cliente_id INT PRIMARY KEY,
+  nit_cliente VARCHAR(20),
+  nombre VARCHAR(100),
+  email VARCHAR(100),
+  direccion VARCHAR(150),
+  telefono VARCHAR(20)
+  );
+
+dim_sede:
+  CREATE TABLE dim_sede (
+  sede_id INT PRIMARY KEY,
+  nombre_sede VARCHAR(100),
+  nombre_cliente VARCHAR(100),
+  telefono VARCHAR(20),
+  direccion VARCHAR(150),
+  ciudad VARCHAR(100)
+  );
+
+dim_mensajero:  
+  CREATE TABLE dim_mensajero (
+  mensajero_id INT PRIMARY KEY,
+  username VARCHAR(50),
+  telefono VARCHAR(20),
+  tipo_transporte VARCHAR(50),
+  activo BOOLEAN
+  );
+
+dim_estado_servicio:
+  CREATE TABLE dim_estado_servicio (
+  estado_servicio_id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  descripcion TEXT
+  );
+
+dim_novedad:  
+  CREATE TABLE dim_novedad (
+  novedad_id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  descripcion TEXT
+  );
+
+dim_prioridad:
+  CREATE TABLE dim_prioridad (
+  prioridad_id INT PRIMARY KEY,
+  prioridad VARCHAR(50)
+  );
+
+dim_servicio:
+  CREATE TABLE dim_servicio (
+  servicio_id INT PRIMARY KEY,
+  cliente_id INT,
+  sede_id INT,
+  fecha_solicitud DATE,
+  hora_solicitud TIME,
+  mensajero_id INT,
+  prioridad VARCHAR(50)
+  );
+
+##TABLAS DE HECHOS
+hechos_solicitud_servicios: 
+  CREATE TABLE hechos_solicitud_servicios (
+  solicitud_servicio_id SERIAL PRIMARY KEY,
+  servicio_id INT,
+  cliente_id INT,
+  sede_id INT,
+  fecha_solicitud_id DATE,
+  hora_solicitud_id TIME,
+  prioridad_id INT,
+  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
+  FOREIGN KEY (cliente_id) REFERENCES dim_cliente(cliente_id),
+  FOREIGN KEY (sede_id) REFERENCES dim_sede(sede_id),
+  FOREIGN KEY (fecha_solicitud_id) REFERENCES dim_fecha(fecha_id),
+  FOREIGN KEY (hora_solicitud_id) REFERENCES dim_hora(hora_id),
+  FOREIGN KEY (prioridad_id) REFERENCES dim_prioridad(prioridad_id)
+  );
+
+hecho_ejecucion_servicios: 
+  CREATE TABLE hecho_ejecucion_servicios (
+  ejecucion_servicio_id SERIAL PRIMARY KEY,
+  servicio_id INT,
+  estado_servicio_id INT,
+  fecha_estado_id DATE,
+  hora_estado_id TIME,
+  mensajero_id INT,
+  novedad_id INT,
+  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
+  FOREIGN KEY (estado_servicio_id) REFERENCES dim_estado_servicio(estado_servicio_id),
+  FOREIGN KEY (fecha_estado_id) REFERENCES dim_fecha(fecha_id),
+  FOREIGN KEY (hora_estado_id) REFERENCES dim_hora(hora_id),
+  FOREIGN KEY (mensajero_id) REFERENCES dim_mensajero(mensajero_id),
+  FOREIGN KEY (novedad_id) REFERENCES dim_novedad(novedad_id)
+  );
