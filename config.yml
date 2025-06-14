@@ -1,0 +1,21 @@
+CO_SA:
+  drivername: postgresql
+  dbname: salud
+  user: Mayra
+  password: mAYRA
+  host: localhost
+  port: 5432
+
+ETL_PRO:
+  drivername: postgresql
+  dbname: bodega_salud
+  user: Mayra
+  password: mAYRA
+  host: localhost
+  port: 5432
+
+LOAD_DIMENSIONS:
+  True
+
+medicamentos:
+  sources/medicamentos.xls
