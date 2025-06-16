@@ -27,58 +27,60 @@ def extract_cliente(conection: Engine):
 
 
 
-def extract_medico(conection: Engine):
-    dim_medico = pd.read_sql_table('medico', conection)
-    return dim_medico
+def extract_sede(conection: Engine):
+    dim_sede = pd.read_sql_table('sede', conection)
+    return dim_sede
 
 
 
-
-def extract_persona(conection: Engine):
-    beneficiarios = pd.read_sql_table("beneficiario", conection)
-    cotizantes = pd.read_sql_table("cotizante", conection)
-    cotizante_beneficiario = pd.read_sql_table("cotizante_beneficiario", conection)
-    return [beneficiarios, cotizantes, cotizante_beneficiario]
+def extract_mensajero(conection: Engine):
+    dim_mensajero = pd.read_sql_table("auth_user", conection)
+    return dim_mensajero
 
 
+def extract_estado_servicio(conection: Engine):
+    dim_estado_servicio = pd.read_sql_table('mensajeria_estado', conection)
+    return dim_estado_servicio
+
+def extract_servicio(conection: Engine):
+    dim_servicio = pd.read_sql_table('mensajeria_servicio', conection)
+    return dim_servicio
 
 
-def extract_trans_servicio(conection: Engine):
-    df_citas = pd.read_sql_table('citas_generales', conection)
-    df_urgencias = pd.read_sql_table('urgencias', conection)
-    df_hosp = pd.read_sql_table('hospitalizaciones', conection)
-    remisiones = pd.read_sql_table('remisiones', conection)
-    return [df_citas, df_urgencias, df_hosp,remisiones]
-
-
-
-
-def extract_hecho_atencion(conection: Engine):
-    df_diag = pd.read_sql_table('dim_diag', conection)
-    df_demo = pd.read_sql_table('dim_demografia', conection)
-    df_trans = pd.read_sql_table('trans_servicio', conection)
-    dim_persona = pd.read_sql_table('dim_persona', conection)
-    dim_medico = pd.read_sql_table('dim_medico', conection)
+def extract_hecho_solicitud_servicios(conection: Engine):
     dim_servicio = pd.read_sql_table('dim_servicio', conection)
-    dim_ips = pd.read_sql_table('dim_ips', conection)
+    dim_hora = pd.read_sql_table('dim_hora', conection)
     dim_fecha = pd.read_sql_table('dim_fecha', conection)
-    return [df_trans,dim_persona,dim_medico,dim_servicio,dim_ips,dim_fecha,df_diag,df_demo ]
+    dim_cliente = pd.read_sql_table('dim_cliente', conection)
+    dim_sede = pd.read_sql_table('dim_sede', conection)
+    dim_prioridad = pd.read_sql_table('dim_prioridad', conection)
 
-def extract_medicamentos(path):
-    df_medicamentos = pd.read_excel(path)
-    df_medicamentos = df_medicamentos.rename(columns={'Código':'codigo', 'Nombre Genérico':'nombre','Forma Farmacéutica':'forma',
-                                    'Laboratorio y Registro':'laboratorio', 'Tipo Medicamento':'tipo', 'Presentación':'presentacion','Precio':'precio'})
-    return df_medicamentos
+    return [dim_servicio, dim_hora, dim_fecha, dim_cliente, dim_sede, dim_prioridad]
+
+def extract_hecho_ejecucion_servicios(conection: Engine):
+    dim_servicio = pd.read_sql_table('dim_servicio', conection)
+    dim_hora = pd.read_sql_table('dim_hora', conection)
+    dim_fecha = pd.read_sql_table('dim_fecha', conection)
+    dim_mensajero = pd.read_sql_table('dim_mensajero', conection)
+    dim_novedad = pd.read_sql_table('dim_novedad', conection)
+    dim_estado_servicio = pd.read_sql_table('dim_estado_servicio', conection)
+
+    return [dim_servicio, dim_hora, dim_fecha, dim_mensajero, dim_novedad, dim_estado_servicio]
+
+#def extract_medicamentos(path):
+ #   df_medicamentos = pd.read_excel(path)
+  #  df_medicamentos = df_medicamentos.rename(columns={'Código':'codigo', 'Nombre Genérico':'nombre','Forma Farmacéutica':'forma',
+   #                                 'Laboratorio y Registro':'laboratorio', 'Tipo Medicamento':'tipo', 'Presentación':'presentacion','Precio':'precio'})
+    #return df_medicamentos
 
 
 
+#def extract_receta(conection:Engine):
+ #   df_receta = pd.read_sql_query('''select codigo_formula , id_medico, id_usuario, fecha, 
+  #  medicamentos_recetados as medicamentos from formulas_medicas''',conection)
+   # return df_receta
 
-def extract_receta(conection:Engine):
-    df_receta = pd.read_sql_query('''select codigo_formula , id_medico, id_usuario, fecha, 
-    medicamentos_recetados as medicamentos from formulas_medicas''',conection)
-    return df_receta
-
-def extract_demografia(conection: Engine):
+"""def extract_demografia(conection: Engine):
     df_benco= pd.read_sql_table('cotizante_beneficiario', conection)
     df_cotizantes = pd.read_sql_query(
         '''select cedula as numero_identificacion, tipo_cotizante, estado_civil, sexo, fecha_nacimiento,
@@ -111,14 +113,8 @@ def extract_retiros(conection: Engine,conection_etl):
     df_fecha = pd.read_sql_query('select * from dim_fecha', conection_etl)
     return [df_pagos, df_retiros,df_per, df_dom,df_fecha]
 
-def extract_hecho_entrega(source, etl):
-    df_med = pd.read_sql_table('dim_medicamentos',etl)
-    df_form = extract_receta(source)
-    df_demo = pd.read_sql_table('dim_demografia', etl)
-    df_per = pd.read_sql_table('dim_persona', etl)
-    df_doc = pd.read_sql_table('dim_medico', etl)
-    df_fecha = pd.read_sql_table('dim_fecha',etl)
-    return [df_med,df_form,df_per, df_doc,df_fecha,df_demo]
+
+
 
 def extract_remisiones(conection : Engine,etl):
     df_demo = pd.read_sql_table('dim_demografia', etl)
@@ -132,8 +128,7 @@ def extract_remisiones(conection : Engine,etl):
 def extract_servicios(conectionn):
     df_servicios = pd.read_sql_table('servicios_pos', conectionn)
     return df_servicios
-
-
+"""
 
 
 #%%
