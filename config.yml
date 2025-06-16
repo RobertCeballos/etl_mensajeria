@@ -1,6 +1,6 @@
 CO_SA:
   drivername: postgresql
-  dbname: salud
+  dbname: mensajeria
   user: Mayra
   password: mAYRA
   host: localhost
@@ -8,7 +8,7 @@ CO_SA:
 
 ETL_PRO:
   drivername: postgresql
-  dbname: bodega_salud
+  dbname: Bodega_mensajeria
   user: Mayra
   password: mAYRA
   host: localhost
@@ -17,5 +17,5 @@ ETL_PRO:
 LOAD_DIMENSIONS:
   True
 
-medicamentos:
-  sources/medicamentos.xls
+#medicamentos:
+  # sources/medicamentos.xls

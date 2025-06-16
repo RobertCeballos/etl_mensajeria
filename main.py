@@ -41,56 +41,53 @@ if not tnames:
 if utils_etl.new_data(etl_conn):
 
     if config['LOAD_DIMENSIONS']:
-        dim_ips = extract.extract_ips(co_sa)
-        dim_persona = extract.extract_persona(co_sa)
-        dim_medico = extract.extract_medico(co_sa)
-        trans_servicio = extract.extract_trans_servicio(co_sa)
-        dim_demo = extract.extract_demografia(co_sa)
-        dim_diag = extract.extract_enfermedades(co_sa)
-        dim_drug = extract.extract_medicamentos(config['medicamentos'])
-        dim_servicio = extract.extract_servicios(co_sa)
-
+        dim_cliente = extract.extract_cliente(co_sa)
+        dim_sede = extract.extract_sede(co_sa)
+        dim_mensajero = extract.extract_mensajero(co_sa)
+        dim_estado_servicio = extract.extract_estado_servicio(co_sa)
+        dim_novedad = extract.extract_novedad(co_sa)
+        dim_prioridad = extract.extract_prioridad(co_sa)
+        dim_servicio = extract.extract_servicio(co_sa)
+       
 
         # transform
-        dim_ips = transform.transform_ips(dim_ips)
-        dim_persona = transform.transform_persona(dim_persona)
-        dim_medico = transform.transform_medico(dim_medico)
-        trans_servicio = transform.transform_trans_servicio(trans_servicio)
+        dim_cliente = transform.transform_cliente(dim_cliente)
+        dim_sede = transform.transform_sede(dim_sede)
+        dim_mensajero = transform.transform_mensajero(dim_mensajero)
+        dim_estado_servicio = transform.transform_estado_servicio(dim_estado_servicio)
         dim_fecha = transform.transform_fecha()
-        dim_demo = transform.transform_demografia(dim_demo)
-        dim_diag = transform.transform_enfermedades(dim_diag)
+        dim_hora = transform.transform_hora()
+        dim_novedad = transform.transform_novedad(dim_novedad)
+        dim_prioridad = transform.transform_prioridad(dim_prioridad)
+        dim_servicio = transform.transform_servicio(dim_servicio)
 
 
 
-        load.load(dim_ips, etl_conn, 'dim_ips', True)
+        load.load(dim_cliente, etl_conn, 'dim_cliente', True)
         load.load(dim_fecha, etl_conn, 'dim_fecha', True)
         load.load(dim_servicio, etl_conn, 'dim_servicio', True)
-        load.load(dim_persona, etl_conn, 'dim_persona', True)
-        load.load(dim_medico, etl_conn, 'dim_medico', True)
-        load.load(trans_servicio, etl_conn, 'trans_servicio', True)
-        load.load(dim_diag, etl_conn, 'dim_diag', True)
-        load.load(dim_demo, etl_conn, 'dim_demografia', True)
-        load.load(dim_drug,etl_conn,'dim_medicamentos',True)
+        load.load(dim_sede, etl_conn, 'dim_sede', True)
+        load.load(dim_mensajero, etl_conn, 'dim_mensajero', True)
+        load.load(dim_estado_servicio, etl_conn, 'estado_servicio', True)
+        load.load(dim_novedad, etl_conn, 'dim_novedad', True)
+        load.load(dim_prioridad, etl_conn, 'dim_prioridad', True)
+        load.load(dim_hora,etl_conn,'dim_hora',True)
 
 
-    #hecho Atencion
-    hecho_atencion = extract.extract_hecho_atencion(etl_conn)
-    hecho_atencion = transform.transform_hecho_atencion(hecho_atencion)
-    load.load_hecho_atencion(hecho_atencion, etl_conn)
-    print('Done atencion fact')
-    # Hecho Entrega medicamentos
-    hecho_entrega = extract.extract_hecho_entrega(co_sa,etl_conn)
-    hecho_entrega, masrecetados = transform.transform_hecho_entrega(hecho_entrega)
-    load.load_hecho_entrega(hecho_entrega, etl_conn)
-    print('Done entrega fact')
+    #hecho solicitud servicios
+    hecho_solicitud_servicios = extract.extract_solicitud_servicios(etl_conn)
+    hecho_solicitud_servicios = transform.transform_solicitud_servicios(hecho_solicitud_servicios)
+    load.load_hecho_solicitud_servicio(hecho_solicitud_servicios, etl_conn)
+    print('Done servicios fact')
+
+    # Hecho ejecucion servicios
+    hecho_ejecucion_servicios = extract.extract_hecho_ejecucion_servicios(co_sa,etl_conn)
+    hecho_ejecucion_servicios = transform.transform_hecho_ejecucion_servicios(hecho_ejecucion_servicios)
+    load.load_hecho_ejecucion_servicios(hecho_ejecucion_servicios, etl_conn)
+    print('Done ejecucion servicios fact')
     # medicamentos que mas se recetan juntos
-    masrecetados = masrecetados.astype('string')
-    load.load(masrecetados,etl_conn, 'mas_recetados', False)
-    # Hecho retrios
-    hecho_retiros = extract.extract_retiros(co_sa,etl_conn)
-    hecho_retiros = transform.transform_hecho_retiros(hecho_retiros,1)
-    load.load(hecho_retiros, etl_conn, 'hecho_retiros', False)
-    print('Done retiros fact')
+    #masrecetados = masrecetados.astype('string')
+    #load.load(masrecetados,etl_conn, 'mas_recetados', False)
 
     print('success all facts loaded')
 else:

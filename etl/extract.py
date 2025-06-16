@@ -16,14 +16,14 @@ def extract(tables : list,conection: Engine)-> pd.DataFrame:
 
 
 
-def extract_ips(conection: Engine):
+def extract_cliente(conection: Engine):
     """
     Extract data from database where the conectionexion established
     :param conection:
     :return:
     """
-    dim_ips = pd.read_sql_table('ips', conection)
-    return dim_ips
+    dim_cliente = pd.read_sql_table('cliente', conection)
+    return dim_cliente
 
 
 
