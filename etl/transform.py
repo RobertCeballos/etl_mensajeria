@@ -6,6 +6,7 @@ from typing import Tuple, Any
 import holidays
 import numpy as np
 import pandas as pd
+import pyspark
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, when
 from mlxtend.frequent_patterns import apriori
@@ -66,34 +67,8 @@ def transform_fecha() -> DataFrame:
     dim_fecha["saved"] = date.today()
     return dim_fecha
 
-def transform_hora() -> DataFrame:
-def transform_hora(spark: SparkSession) -> DataFrame:
-    # Crear una lista de 0 a 23 representando cada hora del día
-    horas = [(i,) for i in range(24)]
-    
-    # Crear DataFrame inicial
-    dim_hora = spark.createDataFrame(horas, ["hora_id"])
 
-    # Agregar columna con la hora en formato HH:MM:SS
-    dim_hora = dim_hora.withColumn("hora", df["hora_id"].cast("string").rjust(2, "0"))
-    dim_hora = dim_hora.withColumn("hora", df["hora"].concat(lit(":00:00")))
-
-    # Agregar columna de rango_hora
-    dim_hora = dim_hora.withColumn(
-        "rango_hora",
-        when((df["hora_id"] >= 0) & (df["hora_id"] < 6), "Madrugada")
-        .when((df["hora_id"] >= 6) & (df["hora_id"] < 12), "Mañana")
-        .when((df["hora_id"] >= 12) & (df["hora_id"] < 18), "Tarde")
-        .otherwise("Noche")
-    )
-
-    # Agregar columna de turno (ejemplo con turnos de 8 horas)
-    dim_hora = dim_hora.withColumn(
-        "turno",
-        when((df["hora_id"] >= 0) & (df["hora_id"] < 8), "Turno 1")
-        .when((df["hora_id"] >= 8) & (df["hora_id"] < 16), "Turno 2")
-        .otherwise("Turno 3")
-    )   
+def transform_hora() -> DataFrame: 
 
     return dim_hora
 
@@ -102,7 +77,7 @@ def transform_estado_servicio(dim_estado_servicio: DataFrame) -> DataFrame:
     return dim_estado_servicio
 
 def transform_novedad(dim_novedad: DataFrame) -> DataFrame:
-
+    dim_novedad=""
     return dim_novedad
 
 def transform_prioridad(dim_prioridad: DataFrame) -> DataFrame:

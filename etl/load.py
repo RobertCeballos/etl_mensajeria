@@ -6,34 +6,43 @@ import yaml
 from sqlalchemy.dialects.postgresql import insert
 
 
-def load_data_ips(dim_ips: DataFrame, etl_conn):
-    dim_ips.to_sql('dim_ips', etl_conn, if_exists='append', index_label='key_dim_ips')
+def load_data_cliente(dim_cliente: DataFrame, etl_conn):
+    dim_cliente.to_sql('dim_cliente', etl_conn, if_exists='append', index_label='key_dim_cliente')
 
 
-def load_data_medico(dim_medico: DataFrame, etl_conn: Engine):
-    dim_medico.to_sql('dim_medico', etl_conn, if_exists='append', index_label='key_dim_medico')
+def load_data_sede(dim_sede: DataFrame, etl_conn: Engine):
+    dim_sede.to_sql('dim_sede', etl_conn, if_exists='append', index_label='key_dim_sede')
 
 
-def load_data_persona(dim_persona: DataFrame, etl_conn: Engine):
-    dim_persona.to_sql('dim_persona', con=etl_conn, index_label='key_dim_persona', if_exists='append')
+def load_data_mensajero(dim_mensajero: DataFrame, etl_conn: Engine):
+    dim_mensajero.to_sql('dim_mensajero', con=etl_conn, index_label='key_dim_mensajero', if_exists='append')
 
 
-def load_data_servicio(dim_servicio: DataFrame, etl_conn: Engine):
-    dim_servicio.to_sql('dim_servicio', etl_conn, if_exists='append', index_label='key_dim_servicio')
+def load_data_estado_servicio(dim_estado_servicio: DataFrame, etl_conn: Engine):
+    dim_estado_servicio.to_sql('dim_estado_servicio', etl_conn, if_exists='append', index_label='key_dim_estado_servicio')
 
 
 def load_data_fecha(dim_fecha: DataFrame, etl_conn: Engine):
     dim_fecha.to_sql('dim_fecha', etl_conn, if_exists='append', index_label='key_dim_fecha')
 
 
-def load_data_trans_servicio(trans_servicio: DataFrame, etl_conn: Engine):
-    trans_servicio.to_sql('trans_servicio', etl_conn, if_exists='append', index_label='key_trans_servicio')
+def load_data_hora(dim_hora: DataFrame, etl_conn: Engine):
+    dim_hora.to_sql('dim_hora', etl_conn, if_exists='append', index_label='key_dim_hora')
 
+def load_data_novedad(dim_novedad: DataFrame, etl_conn: Engine):
+    dim_novedad.to_sql('dim_novedad', etl_conn, if_exists='append', index_label='key_dim_novedad')
 
-def load_hecho_atencion(hecho_atencion: DataFrame, etl_conn: Engine):
-    hecho_atencion.to_sql('hecho_atencion', etl_conn, if_exists='append', index=False)
-def load_hecho_entrega(hecho_entrega: DataFrame, etl_conn: Engine):
-    hecho_entrega.to_sql('hecho_entrega', etl_conn, if_exists='append', index=False)
+def load_data_prioridad(dim_prioridad: DataFrame, etl_conn: Engine):
+    dim_prioridad.to_sql('dim_prioridad', etl_conn, if_exists='append', index_label='key_dim_prioridad')
+
+def load_data_servicio(dim_servicio: DataFrame, etl_conn: Engine):
+    dim_servicio.to_sql('dim_servicio', etl_conn, if_exists='append', index_label='key_dim_servicio')
+
+def load_hecho_solicitud_servicios(hecho_solicitud_servicios: DataFrame, etl_conn: Engine):
+    hecho_solicitud_servicios.to_sql('hecho_solicitud_servicios', etl_conn, if_exists='append', index=False)
+
+def load_hecho_ejecucion_servicios(hecho_ejecucion_servicios: DataFrame, etl_conn: Engine):
+    hecho_ejecucion_servicios.to_sql('hecho_ejecucion_servicios', etl_conn, if_exists='append', index=False)
 
 def load(table: DataFrame, etl_conn: Engine, tname, replace: bool = False):
     """
