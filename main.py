@@ -62,8 +62,8 @@ if config['LOAD_DIMENSIONS']:
 
 
 
-    load.load(dim_cliente, etl_conn, 'dim_cliente', True)
-    load.load(dim_fecha, etl_conn, 'dim_fecha', True)
+    #load.load(dim_cliente, etl_conn, 'dim_cliente', True)
+    #load.load(dim_fecha, etl_conn, 'dim_fecha', True)
     load.load(dim_servicio, etl_conn, 'dim_servicio', True)
     load.load(dim_sede, etl_conn, 'dim_sede', True)
     load.load(dim_mensajero, etl_conn, 'dim_mensajero', True)

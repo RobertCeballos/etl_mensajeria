@@ -1,7 +1,8 @@
 
 dim_fecha: 
   CREATE TABLE dim_fecha (
-  fecha_id DATE PRIMARY KEY,
+  fecha_id INT PRIMARY KEY,
+  fecha DATE,
   ano INT,
   mes INT,
   dia_mes INT,
@@ -12,7 +13,7 @@ dim_fecha:
 
 dim_hora:
   CREATE TABLE dim_hora (
-  hora_id TIME PRIMARY KEY,
+  hora_id INT PRIMARY KEY,
   hora INT,
   minuto INT,
   segundo INT
@@ -69,9 +70,8 @@ dim_prioridad:
 
 dim_servicio:
   CREATE TABLE dim_servicio (
-  servicio_id INT PRIMARY KEY,
+  id INT PRIMARY KEY,
   cliente_id INT,
-  sede_id INT,
   fecha_solicitud DATE,
   hora_solicitud TIME,
   mensajero_id INT,
@@ -85,8 +85,8 @@ hechos_solicitud_servicios:
   servicio_id INT,
   cliente_id INT,
   sede_id INT,
-  fecha_solicitud_id DATE,
-  hora_solicitud_id TIME,
+  fecha_solicitud_id INT,
+  hora_solicitud_id INT,
   prioridad_id INT,
   FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
   FOREIGN KEY (cliente_id) REFERENCES dim_cliente(cliente_id),
@@ -101,8 +101,8 @@ hecho_ejecucion_servicios:
   ejecucion_servicio_id SERIAL PRIMARY KEY,
   servicio_id INT,
   estado_servicio_id INT,
-  fecha_estado_id DATE,
-  hora_estado_id TIME,
+  fecha_estado_id INT,
+  hora_estado_id INT,
   mensajero_id INT,
   novedad_id INT,
   FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
