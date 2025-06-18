@@ -22,7 +22,7 @@ def extract_cliente(conection: Engine):
     :param conection:
     :return:
     """
-    dim_cliente = pd.read_sql_table('cliente', conection)
+    dim_cliente = pd.read_sql_query('select cliente_id, nit_cliente, nombre, email, direccion, telefono from cliente', conection)
     return dim_cliente
 
 
@@ -43,7 +43,7 @@ def extract_estado_servicio(conection: Engine):
     return dim_estado_servicio
 
 def extract_servicio(conection: Engine):
-    dim_servicio = pd.read_sql_table('mensajeria_servicio', conection)
+    dim_servicio= pd.read_sql_query('select id, cliente_id, fecha_solicitud, hora_solicitud, mensajero_id, prioridad from mensajeria_servicio', conection)
     return dim_servicio
 
 

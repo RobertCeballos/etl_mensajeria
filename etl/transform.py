@@ -47,7 +47,21 @@ def transform_mensajero(dim_mensajero: DataFrame) -> DataFrame:
 
     return dim_mensajero
 
+def transform_fecha() -> DataFrame:
+    
+    dim_fecha = pd.DataFrame({"fecha": pd.date_range(start='1/9/2023', end='1/9/2024', freq='D')})
+    num_filas = 366
+    dim_fecha["fecha_id"] = range(1, num_filas + 1)
+    dim_fecha["ano"] = dim_fecha["fecha"].dt.year
+    dim_fecha["mes"] = dim_fecha["fecha"].dt.month
+    dim_fecha["dia_mes"] = dim_fecha["fecha"].dt.day
+    dim_fecha["dia_semana"] = dim_fecha["fecha"].dt.weekday
+    co_holidays = holidays.CO(language="es")
+    dim_fecha["festivo"] = dim_fecha["fecha"].apply(lambda x: x in co_holidays)
+    dim_fecha["festivo_nombre"] = dim_fecha["fecha"].apply(lambda x: co_holidays.get(x))
+    return dim_fecha
 
+""""
 def transform_fecha() -> DataFrame:
     dim_fecha = pd.DataFrame({"date": pd.date_range(start='1/1/2005', end='1/1/2009', freq='D')})
     dim_fecha["year"] = dim_fecha["date"].dt.year
@@ -66,7 +80,7 @@ def transform_fecha() -> DataFrame:
     dim_fecha["weekend"] = dim_fecha["weekday"].apply(lambda x: x > 4)
     dim_fecha["saved"] = date.today()
     return dim_fecha
-
+"""
 
 def transform_hora() -> DataFrame: 
 
