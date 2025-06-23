@@ -15,7 +15,6 @@ def extract(tables : list,conection: Engine)-> pd.DataFrame:
     return a
 
 
-
 def extract_cliente(conection: Engine):
     """
     Extract data from database where the conectionexion established
@@ -28,13 +27,24 @@ def extract_cliente(conection: Engine):
 
 
 def extract_sede(conection: Engine):
-    dim_sede = pd.read_sql_table('sede', conection)
+    dim_sede = pd.read_sql_query('select sede_id, nombre, cliente_id, direccion, telefono from sede', conection)
     return dim_sede
 
 
-
 def extract_mensajero(conection: Engine):
-    dim_mensajero = pd.read_sql_table("auth_user", conection)
+    query = """
+    SELECT DISTINCT ON (au.id)
+    au.id,
+    au.username,
+    au.email,
+    mt.nombre AS tipo_transporte,
+    au.is_active
+    FROM auth_user au
+    JOIN mensajeria_servicio ms ON ms.mensajero_id = au.id
+    JOIN mensajeria_tipovehiculo mt ON ms.tipo_vehiculo_id = mt.id
+    ORDER BY au.id, ms.id
+    """
+    dim_mensajero = pd.read_sql_query(query, con=conection)
     return dim_mensajero
 
 
@@ -46,6 +56,10 @@ def extract_servicio(conection: Engine):
     dim_servicio= pd.read_sql_query('select id, cliente_id, fecha_solicitud, hora_solicitud, mensajero_id, prioridad from mensajeria_servicio', conection)
     return dim_servicio
 
+def extract_prioridad(conection: Engine):
+    dim_prioridad= pd.read_sql_query('SELECT DISTINCT prioridad FROM mensajeria_servicio', conection)
+    dim_prioridad["prioridad_id"] = range(1, len(dim_prioridad) + 1)
+    return dim_prioridad
 
 def extract_hecho_solicitud_servicios(conection: Engine):
     dim_servicio = pd.read_sql_table('dim_servicio', conection)

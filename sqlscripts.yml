@@ -32,25 +32,24 @@ dim_cliente:
 dim_sede:
   CREATE TABLE dim_sede (
   sede_id INT PRIMARY KEY,
-  nombre_sede VARCHAR(100),
-  nombre_cliente VARCHAR(100),
+  nombre VARCHAR(100),
+  cliente_id INT,
   telefono VARCHAR(20),
   direccion VARCHAR(150),
-  ciudad VARCHAR(100)
   );
 
 dim_mensajero:  
   CREATE TABLE dim_mensajero (
-  mensajero_id INT PRIMARY KEY,
+  id INT PRIMARY KEY,
   username VARCHAR(50),
-  telefono VARCHAR(20),
+  email VARCHAR(50),
   tipo_transporte VARCHAR(50),
-  activo BOOLEAN
+  is_active BOOLEAN
   );
 
 dim_estado_servicio:
   CREATE TABLE dim_estado_servicio (
-  estado_servicio_id INT PRIMARY KEY,
+  id INT PRIMARY KEY,
   nombre VARCHAR(100),
   descripcion TEXT
   );
