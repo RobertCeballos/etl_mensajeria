@@ -26,11 +26,6 @@ def extract_cliente(conection: Engine):
 
 
 
-def extract_sede(conection: Engine):
-    dim_sede = pd.read_sql_query('select sede_id, nombre, cliente_id, direccion, telefono from sede', conection)
-    return dim_sede
-
-
 def extract_mensajero(conection: Engine):
     query = """
     SELECT DISTINCT ON (au.id)
@@ -53,7 +48,7 @@ def extract_estado_servicio(conection: Engine):
     return dim_estado_servicio
 
 def extract_servicio(conection: Engine):
-    dim_servicio= pd.read_sql_query('select id, cliente_id, fecha_solicitud, hora_solicitud, mensajero_id, prioridad from mensajeria_servicio', conection)
+    dim_servicio= pd.read_sql_query('select id, cliente_id, fecha_solicitud, hora_solicitud, mensajero_id, prioridad, ciudad_origen_id from mensajeria_servicio', conection)
     return dim_servicio
 
 def extract_prioridad(conection: Engine):
@@ -61,15 +56,24 @@ def extract_prioridad(conection: Engine):
     dim_prioridad["prioridad_id"] = range(1, len(dim_prioridad) + 1)
     return dim_prioridad
 
+
+def extract_ciudad(conection: Engine):
+    dim_ciudad= pd.read_sql_table('ciudad', conection)
+    return dim_ciudad
+
+def extract_novedad(conection: Engine):
+    dim_novedad= pd.read_sql_table('mensajeria_tiponovedad', conection)
+    return dim_novedad
+
 def extract_hecho_solicitud_servicios(conection: Engine):
     dim_servicio = pd.read_sql_table('dim_servicio', conection)
     dim_hora = pd.read_sql_table('dim_hora', conection)
     dim_fecha = pd.read_sql_table('dim_fecha', conection)
     dim_cliente = pd.read_sql_table('dim_cliente', conection)
-    dim_sede = pd.read_sql_table('dim_sede', conection)
+    dim_ciudad = pd.read_sql_table('dim_ciudad', conection)
     dim_prioridad = pd.read_sql_table('dim_prioridad', conection)
-
-    return [dim_servicio, dim_hora, dim_fecha, dim_cliente, dim_sede, dim_prioridad]
+    
+    return [dim_servicio, dim_hora, dim_fecha, dim_cliente, dim_ciudad, dim_prioridad]
 
 def extract_hecho_ejecucion_servicios(conection: Engine):
     dim_servicio = pd.read_sql_table('dim_servicio', conection)

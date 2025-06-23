@@ -19,10 +19,10 @@ def transform_cliente(dim_cliente: DataFrame) -> DataFrame:
     return dim_cliente
 
 
-def transform_sede(dim_sede: DataFrame) -> DataFrame:
+def transform_ciudad(dim_ciudad: DataFrame) -> DataFrame:
     #dim_medico.replace({np.nan: 'no aplica', ' ': 'no aplica','':'no_aplica'}, inplace=True)
     #dim_medico["saved"] = date.today()
-    return dim_sede
+    return dim_ciudad
 
 
 def transform_mensajero(dim_mensajero: DataFrame) -> DataFrame:
@@ -91,7 +91,7 @@ def transform_estado_servicio(dim_estado_servicio: DataFrame) -> DataFrame:
     return dim_estado_servicio
 
 def transform_novedad(dim_novedad: DataFrame) -> DataFrame:
-    dim_novedad=""
+
     return dim_novedad
 
 def transform_prioridad(dim_prioridad: DataFrame) -> DataFrame:
@@ -101,3 +101,37 @@ def transform_prioridad(dim_prioridad: DataFrame) -> DataFrame:
 def transform_servicio(dim_servicio: DataFrame) -> DataFrame:
 
     return dim_servicio
+
+def transform_hecho_solicitud_servicios(hecho_solicitud_servicios: DataFrame) -> DataFrame:
+# Desempaquetar los DataFrames por índice
+    df_servicio = hecho_solicitud_servicios[0].copy()   # dim_servicio
+    df_hora = hecho_solicitud_servicios[1]              # dim_hora
+    df_fecha = hecho_solicitud_servicios[2]             # dim_fecha
+    df_prioridad = hecho_solicitud_servicios[5]         # dim_prioridad
+
+    # === Join con dim_fecha para obtener fecha_solicitud_id
+    df = df_servicio.merge(df_fecha, left_on='fecha_solicitud', right_on='fecha', how='left')
+    df.rename(columns={'fecha_id': 'fecha_solicitud_id'}, inplace=True)
+
+    # === Extraer hora y minuto desde hora_solicitud y unir con dim_hora
+    df['hora'] = df['hora_solicitud'].apply(lambda x: x.hour)
+    df['minuto'] = df['hora_solicitud'].apply(lambda x: x.minute)
+
+    df = df.merge(df_hora, on=['hora', 'minuto'], how='left')
+    df.rename(columns={'hora_id': 'hora_solicitud_id'}, inplace=True)
+
+    # === Join con dim_prioridad para obtener prioridad_id
+    df = df.merge(df_prioridad, on='prioridad', how='left')
+
+    # === Seleccionar columnas finales
+    df_hecho = df[[
+        'id',                  # servicio_id
+        'cliente_id',
+        'ciudad_origen_id',
+        'fecha_solicitud_id',
+        'hora_solicitud_id',
+        'prioridad_id'
+    ]].copy()
+
+    df_hecho.rename(columns={'id': 'servicio_id'}, inplace=True)
+    return df_hecho

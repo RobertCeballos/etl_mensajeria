@@ -29,14 +29,6 @@ dim_cliente:
   telefono VARCHAR(20)
   );
 
-dim_sede:
-  CREATE TABLE dim_sede (
-  sede_id INT PRIMARY KEY,
-  nombre VARCHAR(100),
-  cliente_id INT,
-  telefono VARCHAR(20),
-  direccion VARCHAR(150),
-  );
 
 dim_mensajero:  
   CREATE TABLE dim_mensajero (
@@ -56,15 +48,21 @@ dim_estado_servicio:
 
 dim_novedad:  
   CREATE TABLE dim_novedad (
-  novedad_id INT PRIMARY KEY,
-  nombre VARCHAR(100),
-  descripcion TEXT
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
   );
 
 dim_prioridad:
   CREATE TABLE dim_prioridad (
   prioridad_id INT PRIMARY KEY,
   prioridad VARCHAR(50)
+  );
+
+dim_ciudad:
+  CREATE TABLE dim_ciudad (
+  ciudad_id INT PRIMARY KEY,
+  nombre VARCHAR(50),
+  departamento_id INT
   );
 
 dim_servicio:
@@ -74,22 +72,23 @@ dim_servicio:
   fecha_solicitud DATE,
   hora_solicitud TIME,
   mensajero_id INT,
-  prioridad VARCHAR(50)
+  prioridad VARCHAR(50),
+  ciudad_origen_id INT
   );
 
 ##TABLAS DE HECHOS
 hechos_solicitud_servicios: 
-  CREATE TABLE hechos_solicitud_servicios (
+  CREATE TABLE hecho_solicitud_servicios (
   solicitud_servicio_id SERIAL PRIMARY KEY,
   servicio_id INT,
   cliente_id INT,
-  sede_id INT,
+  ciudad_origen_id INT,
   fecha_solicitud_id INT,
   hora_solicitud_id INT,
   prioridad_id INT,
-  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
+  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(id),
   FOREIGN KEY (cliente_id) REFERENCES dim_cliente(cliente_id),
-  FOREIGN KEY (sede_id) REFERENCES dim_sede(sede_id),
+  FOREIGN KEY (ciudad_origen_id) REFERENCES dim_ciudad(ciudad_id),
   FOREIGN KEY (fecha_solicitud_id) REFERENCES dim_fecha(fecha_id),
   FOREIGN KEY (hora_solicitud_id) REFERENCES dim_hora(hora_id),
   FOREIGN KEY (prioridad_id) REFERENCES dim_prioridad(prioridad_id)
@@ -104,10 +103,10 @@ hecho_ejecucion_servicios:
   hora_estado_id INT,
   mensajero_id INT,
   novedad_id INT,
-  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(servicio_id),
-  FOREIGN KEY (estado_servicio_id) REFERENCES dim_estado_servicio(estado_servicio_id),
+  FOREIGN KEY (servicio_id) REFERENCES dim_servicio(id),
+  FOREIGN KEY (estado_servicio_id) REFERENCES dim_estado_servicio(id),
   FOREIGN KEY (fecha_estado_id) REFERENCES dim_fecha(fecha_id),
   FOREIGN KEY (hora_estado_id) REFERENCES dim_hora(hora_id),
-  FOREIGN KEY (mensajero_id) REFERENCES dim_mensajero(mensajero_id),
-  FOREIGN KEY (novedad_id) REFERENCES dim_novedad(novedad_id)
+  FOREIGN KEY (mensajero_id) REFERENCES dim_mensajero(id),
+  FOREIGN KEY (novedad_id) REFERENCES dim_novedad(id)
   );

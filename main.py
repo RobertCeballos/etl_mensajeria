@@ -42,21 +42,21 @@ if not tnames:
 
 if config['LOAD_DIMENSIONS']:
     dim_cliente = extract.extract_cliente(co_sa)
-    dim_sede = extract.extract_sede(co_sa)
+    dim_ciudad = extract.extract_ciudad(co_sa)
     dim_mensajero = extract.extract_mensajero(co_sa)
     dim_estado_servicio = extract.extract_estado_servicio(co_sa)
     dim_servicio = extract.extract_servicio(co_sa)
     dim_prioridad = extract.extract_prioridad(co_sa)
-    
+    dim_novedad = extract.extract_novedad(co_sa)
 
     # transform
     dim_cliente = transform.transform_cliente(dim_cliente)
-    dim_sede = transform.transform_sede(dim_sede)
+    dim_ciudad = transform.transform_ciudad(dim_ciudad)
     dim_mensajero = transform.transform_mensajero(dim_mensajero)
     dim_estado_servicio = transform.transform_estado_servicio(dim_estado_servicio)
     dim_fecha = transform.transform_fecha()
     #dim_hora = transform.transform_hora()
-    #dim_novedad = transform.transform_novedad(dim_novedad)
+    dim_novedad = transform.transform_novedad(dim_novedad)
     dim_prioridad = transform.transform_prioridad(dim_prioridad)
     dim_servicio = transform.transform_servicio(dim_servicio)
 
@@ -65,18 +65,18 @@ if config['LOAD_DIMENSIONS']:
     #load.load(dim_cliente, etl_conn, 'dim_cliente', True)
     #load.load(dim_fecha, etl_conn, 'dim_fecha', True)
     #load.load(dim_servicio, etl_conn, 'dim_servicio', True)
-    #load.load(dim_sede, etl_conn, 'dim_sede', True)
+    #load.load(dim_ciudad, etl_conn, 'dim_ciudad', True)
     #load.load(dim_mensajero, etl_conn, 'dim_mensajero', True)
     #load.load(dim_estado_servicio, etl_conn, 'dim_estado_servicio', True)
-    load.load(dim_prioridad, etl_conn, 'dim_prioridad', True)
-    load.load(dim_novedad, etl_conn, 'dim_novedad', True)
+    #load.load(dim_prioridad, etl_conn, 'dim_prioridad', True)
+    #load.load(dim_novedad, etl_conn, 'dim_novedad', True)
     #load.load(dim_hora,etl_conn,'dim_hora',True)
 
 
 #hecho solicitud servicios
-hecho_solicitud_servicios = extract.extract_solicitud_servicios(etl_conn)
-hecho_solicitud_servicios = transform.transform_solicitud_servicios(hecho_solicitud_servicios)
-load.load_hecho_solicitud_servicio(hecho_solicitud_servicios, etl_conn)
+hecho_solicitud_servicios = extract.extract_hecho_solicitud_servicios(etl_conn)
+hecho_solicitud_servicios = transform.transform_hecho_solicitud_servicios(hecho_solicitud_servicios)
+load.load_hecho_solicitud_servicios(hecho_solicitud_servicios, etl_conn)
 print('Done servicios fact')
 
 # Hecho ejecucion servicios

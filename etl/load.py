@@ -10,8 +10,8 @@ def load_data_cliente(dim_cliente: DataFrame, etl_conn):
     dim_cliente.to_sql('dim_cliente', etl_conn, if_exists='append', index_label='key_dim_cliente')
 
 
-def load_data_sede(dim_sede: DataFrame, etl_conn: Engine):
-    dim_sede.to_sql('dim_sede', etl_conn, if_exists='append', index_label='key_dim_sede')
+def load_data_ciudad(dim_ciudad: DataFrame, etl_conn: Engine):
+    dim_ciudad.to_sql('dim_ciudad', etl_conn, if_exists='append', index_label='key_dim_ciudad')
 
 
 def load_data_mensajero(dim_mensajero: DataFrame, etl_conn: Engine):
