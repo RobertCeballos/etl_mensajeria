@@ -13,10 +13,12 @@ dim_fecha:
 
 dim_hora:
   CREATE TABLE dim_hora (
-  hora_id INT PRIMARY KEY,
-  hora INT,
-  minuto INT,
-  segundo INT
+  hora_id SERIAL PRIMARY KEY,
+  hora INTEGER NOT NULL CHECK (hora BETWEEN 0 AND 23),
+  minuto INTEGER NOT NULL CHECK (minuto BETWEEN 0 AND 59),
+  hora_str VARCHAR(5) NOT NULL,  -- formato HH:MM
+  periodo_dia VARCHAR(15),       -- Mañana, Tarde, Noche, Madrugada
+  es_hora_pico BOOLEAN DEFAULT FALSE
   );
 
 dim_cliente:  

@@ -75,15 +75,29 @@ def extract_hecho_solicitud_servicios(conection: Engine):
     
     return [dim_servicio, dim_hora, dim_fecha, dim_cliente, dim_ciudad, dim_prioridad]
 
-def extract_hecho_ejecucion_servicios(conection: Engine):
-    dim_servicio = pd.read_sql_table('dim_servicio', conection)
-    dim_hora = pd.read_sql_table('dim_hora', conection)
-    dim_fecha = pd.read_sql_table('dim_fecha', conection)
-    dim_mensajero = pd.read_sql_table('dim_mensajero', conection)
-    dim_novedad = pd.read_sql_table('dim_novedad', conection)
-    dim_estado_servicio = pd.read_sql_table('dim_estado_servicio', conection)
+def extract_hecho_ejecucion_servicios(conn_rel: Engine, conn_dw: Engine):
+# Extraer registros válidos (no de prueba) desde la base relacional
+    raw_query = """
+        SELECT 
+            servicio_id,
+            estado_id,
+            fecha,
+            hora
+        FROM mensajeria_estadosservicio;
+    """
+    raw_df = pd.read_sql(raw_query, conn_rel)
 
-    return [dim_servicio, dim_hora, dim_fecha, dim_mensajero, dim_novedad, dim_estado_servicio]
+    # Extraer dimensiones necesarias desde la bodega
+    dimensiones = {}
+
+    dimensiones['dim_estado_servicio'] = pd.read_sql("SELECT id FROM dim_estado_servicio", conn_dw)
+    dimensiones['dim_fecha'] = pd.read_sql("SELECT fecha_id, fecha FROM dim_fecha", conn_dw)
+    dimensiones['dim_hora'] = pd.read_sql("SELECT hora_id, hora, minuto FROM dim_hora", conn_dw)
+    dimensiones['dim_servicio'] = pd.read_sql("SELECT id FROM dim_servicio", conn_dw)
+
+    return raw_df, dimensiones
+
+
 
 #def extract_medicamentos(path):
  #   df_medicamentos = pd.read_excel(path)

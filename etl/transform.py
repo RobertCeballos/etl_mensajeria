@@ -1,6 +1,7 @@
 #%%
 import datetime
 from datetime import timedelta, date, datetime
+import sys
 from typing import Tuple, Any
 
 import holidays
@@ -49,8 +50,8 @@ def transform_mensajero(dim_mensajero: DataFrame) -> DataFrame:
 
 def transform_fecha() -> DataFrame:
     
-    dim_fecha = pd.DataFrame({"fecha": pd.date_range(start='1/9/2023', end='1/9/2024', freq='D')})
-    num_filas = 366
+    dim_fecha = pd.DataFrame({"fecha": pd.date_range(start='9/1/2023', end='9/1/2024', freq='D')})
+    num_filas = 367
     dim_fecha["fecha_id"] = range(1, num_filas + 1)
     dim_fecha["ano"] = dim_fecha["fecha"].dt.year
     dim_fecha["mes"] = dim_fecha["fecha"].dt.month
@@ -82,9 +83,38 @@ def transform_fecha() -> DataFrame:
     return dim_fecha
 """
 
-def transform_hora() -> DataFrame: 
+def transform_hora():
+    horas = []
+    hora_id = 1
 
-    return dim_hora
+    for h in range(24):
+        for m in range(60):
+            hora_str = f"{h:02}:{m:02}"
+            
+            # Categorizar hora en segmentos del día
+            if 6 <= h < 12:
+                periodo = "Mañana"
+            elif 12 <= h < 18:
+                periodo = "Tarde"
+            elif 18 <= h < 24:
+                periodo = "Noche"
+            else:
+                periodo = "Madrugada"
+            
+            # Horas pico definidas arbitrariamente
+            es_pico = h in [7, 8, 12, 17, 18]
+
+            horas.append({
+                'hora_id': hora_id,
+                'hora': h,
+                'minuto': m,
+                'hora_str': hora_str,
+                'periodo_dia': periodo,
+                'es_hora_pico': es_pico
+            })
+            hora_id += 1
+
+    return pd.DataFrame(horas)
 
 def transform_estado_servicio(dim_estado_servicio: DataFrame) -> DataFrame:
     
@@ -135,3 +165,52 @@ def transform_hecho_solicitud_servicios(hecho_solicitud_servicios: DataFrame) ->
 
     df_hecho.rename(columns={'id': 'servicio_id'}, inplace=True)
     return df_hecho
+
+def transform_hecho_ejecucion_servicios(raw_df, dimensiones):
+    # Asegurar formatos compatibles para merge
+    raw_df['fecha'] = pd.to_datetime(raw_df['fecha']).dt.normalize()
+    dimensiones['dim_fecha']['fecha'] = pd.to_datetime(dimensiones['dim_fecha']['fecha']).dt.normalize()
+    
+    # Extraer hora y minuto
+    raw_df['hora'] = pd.to_datetime(raw_df['hora'], format='%H:%M:%S', errors='coerce')
+    raw_df['hora_num'] = raw_df['hora'].dt.hour
+    raw_df['minuto_num'] = raw_df['hora'].dt.minute
+
+    # Renombrar estado_id
+    raw_df = raw_df.rename(columns={'estado_id': 'estado_servicio_id'})
+
+    # Mapear fecha_estado_id desde dim_fecha
+    raw_df = raw_df.merge(dimensiones['dim_fecha'], how='left', left_on='fecha', right_on='fecha')
+    raw_df.rename(columns={'fecha_id': 'fecha_estado_id'}, inplace=True)
+
+    # Mapear hora_estado_id desde dim_hora (sin segundos)
+    raw_df = raw_df.merge(
+        dimensiones['dim_hora'],
+        how='left',
+        left_on=['hora_num', 'minuto_num'],
+        right_on=['hora', 'minuto']
+    )
+    raw_df.rename(columns={'hora_id': 'hora_estado_id'}, inplace=True)
+
+    # Filtrar servicios válidos
+    servicios_validos = dimensiones['dim_servicio']['id'].unique()
+    raw_df = raw_df[raw_df['servicio_id'].isin(servicios_validos)]
+
+    # Dejar novedad_id y mensajero_id como NULL
+    raw_df['novedad_id'] = None
+    raw_df['mensajero_id'] = None
+
+    # Selección final de columnas
+    final_df = raw_df[[
+        'servicio_id',
+        'estado_servicio_id',
+        'fecha_estado_id',
+        'hora_estado_id',
+        'mensajero_id',
+        'novedad_id'
+    ]].dropna(subset=[
+        'servicio_id', 'estado_servicio_id', 'fecha_estado_id', 'hora_estado_id'
+    ])
+
+    return final_df
+

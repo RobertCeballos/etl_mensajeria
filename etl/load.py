@@ -41,8 +41,36 @@ def load_data_servicio(dim_servicio: DataFrame, etl_conn: Engine):
 def load_hecho_solicitud_servicios(hecho_solicitud_servicios: DataFrame, etl_conn: Engine):
     hecho_solicitud_servicios.to_sql('hecho_solicitud_servicios', etl_conn, if_exists='append', index=False)
 
-def load_hecho_ejecucion_servicios(hecho_ejecucion_servicios: DataFrame, etl_conn: Engine):
-    hecho_ejecucion_servicios.to_sql('hecho_ejecucion_servicios', etl_conn, if_exists='append', index=False)
+def load_hecho_ejecucion_servicios(hecho_ejecucion_servicios: DataFrame, etl_conn: Engine):  
+    with etl_conn.connect() as connection:
+        trans = connection.begin()
+        try:
+            insert_sql = text("""
+                INSERT INTO hecho_ejecucion_servicios (
+                    servicio_id, estado_servicio_id, fecha_estado_id,
+                    hora_estado_id, mensajero_id, novedad_id
+                )
+                VALUES (:servicio_id, :estado_servicio_id, :fecha_estado_id,
+                        :hora_estado_id, :mensajero_id, :novedad_id)
+            """)
+
+            for _, row in hecho_ejecucion_servicios.iterrows():
+                connection.execute(insert_sql, {
+                    'servicio_id': row['servicio_id'],
+                    'estado_servicio_id': row['estado_servicio_id'],
+                    'fecha_estado_id': row['fecha_estado_id'],
+                    'hora_estado_id': row['hora_estado_id'],
+                    'mensajero_id': row['mensajero_id'],
+                    'novedad_id': row['novedad_id'],
+                })
+
+            trans.commit()
+            print("Carga a hecho_ejecucion_servicios completada.")
+        except Exception as e:
+            trans.rollback()
+            print("Error durante la carga:", e)
+
+
 
 def load(table: DataFrame, etl_conn: Engine, tname, replace: bool = False):
     """

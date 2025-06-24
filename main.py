@@ -55,7 +55,7 @@ if config['LOAD_DIMENSIONS']:
     dim_mensajero = transform.transform_mensajero(dim_mensajero)
     dim_estado_servicio = transform.transform_estado_servicio(dim_estado_servicio)
     dim_fecha = transform.transform_fecha()
-    #dim_hora = transform.transform_hora()
+    dim_hora = transform.transform_hora()
     dim_novedad = transform.transform_novedad(dim_novedad)
     dim_prioridad = transform.transform_prioridad(dim_prioridad)
     dim_servicio = transform.transform_servicio(dim_servicio)
@@ -80,8 +80,8 @@ load.load_hecho_solicitud_servicios(hecho_solicitud_servicios, etl_conn)
 print('Done servicios fact')
 
 # Hecho ejecucion servicios
-hecho_ejecucion_servicios = extract.extract_hecho_ejecucion_servicios(co_sa,etl_conn)
-hecho_ejecucion_servicios = transform.transform_hecho_ejecucion_servicios(hecho_ejecucion_servicios)
+raw_df, dimensiones = extract.extract_hecho_ejecucion_servicios(co_sa,etl_conn)
+hecho_ejecucion_servicios = transform.transform_hecho_ejecucion_servicios(raw_df, dimensiones)
 load.load_hecho_ejecucion_servicios(hecho_ejecucion_servicios, etl_conn)
 print('Done ejecucion servicios fact')
 # medicamentos que mas se recetan juntos
