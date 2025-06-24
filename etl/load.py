@@ -54,14 +54,17 @@ def load_hecho_ejecucion_servicios(hecho_ejecucion_servicios: DataFrame, etl_con
                         :hora_estado_id, :mensajero_id, :novedad_id)
             """)
 
-            for _, row in hecho_ejecucion_servicios.iterrows():
+            # Limpieza previa: reemplazar todos los NaN por None
+            df = hecho_ejecucion_servicios.where(pd.notnull(hecho_ejecucion_servicios), None)
+
+            for _, row in df.iterrows():
                 connection.execute(insert_sql, {
-                    'servicio_id': row['servicio_id'],
-                    'estado_servicio_id': row['estado_servicio_id'],
-                    'fecha_estado_id': row['fecha_estado_id'],
-                    'hora_estado_id': row['hora_estado_id'],
-                    'mensajero_id': row['mensajero_id'],
-                    'novedad_id': row['novedad_id'],
+                    'servicio_id': int(row['servicio_id']) if pd.notna(row['servicio_id']) else None,
+                    'estado_servicio_id': int(row['estado_servicio_id']) if pd.notna(row['estado_servicio_id']) else None,
+                    'fecha_estado_id': int(row['fecha_estado_id']) if pd.notna(row['fecha_estado_id']) else None,
+                    'hora_estado_id': int(row['hora_estado_id']) if pd.notna(row['hora_estado_id']) else None,
+                    'mensajero_id': int(row['mensajero_id']) if pd.notna(row['mensajero_id']) else None,
+                    'novedad_id': int(row['novedad_id']) if pd.notna(row['novedad_id']) else None,
                 })
 
             trans.commit()
@@ -69,6 +72,8 @@ def load_hecho_ejecucion_servicios(hecho_ejecucion_servicios: DataFrame, etl_con
         except Exception as e:
             trans.rollback()
             print("Error durante la carga:", e)
+
+
 
 
 

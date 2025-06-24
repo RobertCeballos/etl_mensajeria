@@ -78,12 +78,20 @@ def extract_hecho_solicitud_servicios(conection: Engine):
 def extract_hecho_ejecucion_servicios(conn_rel: Engine, conn_dw: Engine):
 # Extraer registros válidos (no de prueba) desde la base relacional
     raw_query = """
-        SELECT 
-            servicio_id,
-            estado_id,
-            fecha,
-            hora
-        FROM mensajeria_estadosservicio;
+        SELECT
+            me.servicio_id,
+            ms.mensajero_id,
+            me.estado_id,
+            me.fecha,
+            me.hora,
+            mn.tipo_novedad_id AS novedad_id
+        FROM mensajeria_estadosservicio me
+        LEFT JOIN mensajeria_servicio ms ON me.servicio_id = ms.id
+        LEFT JOIN (
+            SELECT DISTINCT ON (servicio_id) servicio_id, tipo_novedad_id
+            FROM mensajeria_novedadesservicio
+            ORDER BY servicio_id, tipo_novedad_id DESC  -- o cualquier otro criterio
+        ) mn ON me.servicio_id = mn.servicio_id;
     """
     raw_df = pd.read_sql(raw_query, conn_rel)
 
@@ -94,7 +102,9 @@ def extract_hecho_ejecucion_servicios(conn_rel: Engine, conn_dw: Engine):
     dimensiones['dim_fecha'] = pd.read_sql("SELECT fecha_id, fecha FROM dim_fecha", conn_dw)
     dimensiones['dim_hora'] = pd.read_sql("SELECT hora_id, hora, minuto FROM dim_hora", conn_dw)
     dimensiones['dim_servicio'] = pd.read_sql("SELECT id FROM dim_servicio", conn_dw)
-
+    dimensiones['dim_mensajero'] = pd.read_sql("SELECT id FROM dim_mensajero", conn_dw)
+    dimensiones['dim_novedad'] = pd.read_sql("SELECT id FROM dim_novedad", conn_dw)
+    
     return raw_df, dimensiones
 
 
