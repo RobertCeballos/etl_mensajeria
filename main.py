@@ -62,15 +62,15 @@ if config['LOAD_DIMENSIONS']:
 
 
 #Comentar los load después de la primer carga.
-    #load.load(dim_cliente, etl_conn, 'dim_cliente', True)
-    #load.load(dim_fecha, etl_conn, 'dim_fecha', True)
-    #load.load(dim_servicio, etl_conn, 'dim_servicio', True)
-    #load.load(dim_ciudad, etl_conn, 'dim_ciudad', True)
-    #load.load(dim_mensajero, etl_conn, 'dim_mensajero', True)
-    #load.load(dim_estado_servicio, etl_conn, 'dim_estado_servicio', True)
-    #load.load(dim_prioridad, etl_conn, 'dim_prioridad', True)
-    #load.load(dim_novedad, etl_conn, 'dim_novedad', True)
-    #load.load(dim_hora,etl_conn,'dim_hora',True)
+    load.load(dim_cliente, etl_conn, 'dim_cliente', True)
+    load.load(dim_fecha, etl_conn, 'dim_fecha', True)
+    load.load(dim_servicio, etl_conn, 'dim_servicio', True)
+    load.load(dim_ciudad, etl_conn, 'dim_ciudad', True)
+    load.load(dim_mensajero, etl_conn, 'dim_mensajero', True)
+    load.load(dim_estado_servicio, etl_conn, 'dim_estado_servicio', True)
+    load.load(dim_prioridad, etl_conn, 'dim_prioridad', True)
+    load.load(dim_novedad, etl_conn, 'dim_novedad', True)
+    load.load(dim_hora,etl_conn,'dim_hora',True)
 
 
 #hecho solicitud servicios
