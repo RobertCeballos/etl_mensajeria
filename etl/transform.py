@@ -231,25 +231,31 @@ def transform_hecho_ejecucion_servicios(raw_df, dimensiones):
     ])
 
     return final_df
-    
+
 def transform_hecho_ejecucion_servicios(raw_df, dimensiones):
+    import pandas as pd
+
     # Asegurar formatos compatibles para merge
     raw_df['fecha'] = pd.to_datetime(raw_df['fecha']).dt.normalize()
     dimensiones['dim_fecha']['fecha'] = pd.to_datetime(dimensiones['dim_fecha']['fecha']).dt.normalize()
-    
+
     # Extraer hora y minuto
     raw_df['hora'] = pd.to_datetime(raw_df['hora'], format='%H:%M:%S', errors='coerce')
     raw_df['hora_num'] = raw_df['hora'].dt.hour
     raw_df['minuto_num'] = raw_df['hora'].dt.minute
 
-    # Renombrar estado_id
-    raw_df = raw_df.rename(columns={'estado_id': 'estado_servicio_id', 'mensajero_id': 'mensajero_id', 'tipo_novedad_id': 'novedad_id'})
+    # Renombrar columnas
+    raw_df = raw_df.rename(columns={
+        'estado_id': 'estado_servicio_id',
+        'mensajero_id': 'mensajero_id',
+        'tipo_novedad_id': 'novedad_id'
+    })
 
-    # Mapear fecha_estado_id desde dim_fecha
+    # Mapear fecha_estado_id
     raw_df = raw_df.merge(dimensiones['dim_fecha'], how='left', left_on='fecha', right_on='fecha')
     raw_df.rename(columns={'fecha_id': 'fecha_estado_id'}, inplace=True)
 
-    # Mapear hora_estado_id desde dim_hora (sin segundos)
+    # Mapear hora_estado_id
     raw_df = raw_df.merge(
         dimensiones['dim_hora'],
         how='left',
@@ -262,13 +268,26 @@ def transform_hecho_ejecucion_servicios(raw_df, dimensiones):
     servicios_validos = dimensiones['dim_servicio']['id'].unique()
     raw_df = raw_df[raw_df['servicio_id'].isin(servicios_validos)]
 
-    # Para validar que mensajero_id exista en dim_mensajero
+    # Validar mensajero_id
     mensajeros_validos = set(dimensiones['dim_mensajero']['id'])
     raw_df.loc[~raw_df['mensajero_id'].isin(mensajeros_validos), 'mensajero_id'] = None
 
-    # Para validar que novedad_id exista en dim_novedad
+    # Validar novedad_id
     novedades_validas = set(dimensiones['dim_novedad']['id'])
     raw_df.loc[~raw_df['novedad_id'].isin(novedades_validas), 'novedad_id'] = None
+
+    # === NUEVO: Calcular tiempo por fase ===
+    # Crear timestamp combinando fecha y hora
+    raw_df['timestamp'] = pd.to_datetime(raw_df['fecha']) + pd.to_timedelta(raw_df['hora_num'], unit='h') + pd.to_timedelta(raw_df['minuto_num'], unit='m')
+
+    # Ordenar por servicio y timestamp
+    raw_df = raw_df.sort_values(by=['servicio_id', 'fecha_estado_id', 'hora_estado_id'])
+
+    # Calcular duración por fase (en minutos)
+    raw_df['tiempo_fase_min'] = raw_df.groupby('servicio_id')['timestamp'].diff().dt.total_seconds() / 60
+
+    # Si quieres: rellenar NA con 0 o dejar como NaN según uso
+    raw_df['tiempo_fase_min'] = raw_df['tiempo_fase_min'].fillna(0)
 
     # Selección final de columnas
     final_df = raw_df[[
@@ -277,9 +296,11 @@ def transform_hecho_ejecucion_servicios(raw_df, dimensiones):
         'fecha_estado_id',
         'hora_estado_id',
         'mensajero_id',
-        'novedad_id'
+        'novedad_id',
+        'tiempo_fase_min'  # nueva columna agregada
     ]].dropna(subset=[
         'servicio_id', 'estado_servicio_id', 'fecha_estado_id', 'hora_estado_id'
     ])
 
     return final_df
+

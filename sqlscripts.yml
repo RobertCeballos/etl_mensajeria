@@ -105,6 +105,7 @@ hecho_ejecucion_servicios:
   hora_estado_id INT,
   mensajero_id INT,
   novedad_id INT,
+  tiempo_fase_min NUMERIC,
   FOREIGN KEY (servicio_id) REFERENCES dim_servicio(id),
   FOREIGN KEY (estado_servicio_id) REFERENCES dim_estado_servicio(id),
   FOREIGN KEY (fecha_estado_id) REFERENCES dim_fecha(fecha_id),
