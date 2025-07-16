@@ -84,12 +84,9 @@ raw_df, dimensiones = extract.extract_hecho_ejecucion_servicios(co_sa,etl_conn)
 hecho_ejecucion_servicios = transform.transform_hecho_ejecucion_servicios(raw_df, dimensiones)
 load.load_hecho_ejecucion_servicios(hecho_ejecucion_servicios, etl_conn)
 print('Done ejecucion servicios fact')
-# medicamentos que mas se recetan juntos
-#masrecetados = masrecetados.astype('string')
-#load.load(masrecetados,etl_conn, 'mas_recetados', False)
+
 
 print('success all facts loaded')
-#else:
-#    print('done not new data')
+
 
 #%%
